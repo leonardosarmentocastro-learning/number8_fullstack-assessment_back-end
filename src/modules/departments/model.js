@@ -4,24 +4,19 @@ import { paginationPlugin } from '@leonardosarmentocastro/pagination';
 import {
   isAlreadyInUseValidator,
   isRequiredValidator,
-  isTooLongValidator,
-  isValidEmailValidator,
   validate,
 } from '@leonardosarmentocastro/validate';
 
-export const usersSchema = new mongoose.Schema({
-  email: String,
-  username: String,
+export const departmentsSchema = new mongoose.Schema({
+  name: String,
 });
 
 // Middlewares
 export const USERS_USERNAME_MAX_LENGTH = 24;
 const validationsMiddleware = async (userDoc, next) => {
   const constraints = [
-    ...['email', 'username'].map(field => isRequiredValidator(field)),
-    ...['email', 'username'].map(field => isAlreadyInUseValidator(field)),
-    isTooLongValidator('username', USERS_USERNAME_MAX_LENGTH),
-    isValidEmailValidator,
+    isRequiredValidator('name'),
+    isAlreadyInUseValidator('name')
   ];
   const error = await validate(constraints, userDoc);
 
@@ -29,12 +24,12 @@ const validationsMiddleware = async (userDoc, next) => {
 };
 
 // Setup
-usersSchema.set('toObject', {
+departmentsSchema.set('toObject', {
   transform,
   virtuals: true // Expose "id" instead of "_id".
 });
-usersSchema.plugin(plugSchema(commonSchema));
-usersSchema.plugin(paginationPlugin);
-usersSchema.post('validate', validationsMiddleware);
+departmentsSchema.plugin(plugSchema(commonSchema));
+departmentsSchema.plugin(paginationPlugin);
+departmentsSchema.post('validate', validationsMiddleware);
 
-export const UsersModel = mongoose.model('User', usersSchema);
+export const DepartmentsModel = mongoose.model('Department', departmentsSchema);

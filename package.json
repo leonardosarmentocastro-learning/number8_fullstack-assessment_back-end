@@ -24,6 +24,7 @@
     "test:functional": "ava **/functional/**/*.test.js --verbose --serial",
     "test:functional:create-docs": "CREATE_DOCS=true npm run test:functional:local",
     "test:functional:local": "npm run env:symlink:test && npm run start:database && npm run test:functional",
+    "test:unit": "ava **/unit/**/*.test.js --verbose",
     "disabled:test:unit": "ava **/unit/**/*.test.js --verbose",
     "test:with-coverage": "nyc npm test"
   },
@@ -55,8 +56,10 @@
     "@leonardosarmentocastro/pagination": "^2.0.0",
     "@leonardosarmentocastro/server": "^2.0.0",
     "@leonardosarmentocastro/validate": "^2.1.3",
+    "dayjs": "^1.11.11",
     "dotenv": "^16.0.1",
-    "mongoose": "6.5.0"
+    "mongoose": "6.5.0",
+    "validator": "^13.12.0"
   },
   "peerDependencies": {
     "mongoose": "6.5.0"
