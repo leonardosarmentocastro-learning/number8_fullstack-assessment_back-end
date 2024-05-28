@@ -1,6 +1,10 @@
 // CONVENTION: Re-export each module.
-import * as users from './users/index.js';
+import * as addresses from './addresses/index.js';
+import * as departments from './departments/index.js';
+import * as employees from './employees/index.js';
 
 export default {
-  users
+  addresses,
+  departments,
+  employees,
 };

@@ -4,7 +4,7 @@ import { database } from '@leonardosarmentocastro/database';
 import { EmployeesModel } from '../../model.js';
 import { DepartmentsModel } from '../../../departments/index.js';
 import { AddressesModel, LOCALES } from '../../../addresses/index.js';
-import { VALID_EMPLOYEE_1, VALID_EMPLOYEE_2 } from '../__fixtures__/employees.fixture.js';
+import { VALID_EMPLOYEE_1, VALID_EMPLOYEE_2 } from '../__fixtures__/employees.fixtures.js';
 
 const cleanUp = async t => {
   await DepartmentsModel.deleteMany({});

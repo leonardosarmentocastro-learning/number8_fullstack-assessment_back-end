@@ -1,9 +1,8 @@
 import { readResolver } from '@leonardosarmentocastro/crud';
-// import { EmployeesModel } from './model.js';
+import { DepartmentsModel } from './model.js';
 
 export const connect = (app) => {
-  // crud.connect(app, EmployeesModel);
-  app.get('/orders', [
-    // readResolver(OrdersModel, { sensitive: true, toJson: true })
+  app.get('/departments', [
+    readResolver(DepartmentsModel, { sensitive: true, toJson: true })
   ]);
 };
