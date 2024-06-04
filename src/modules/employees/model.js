@@ -8,15 +8,17 @@ import {
 
 import { addressesSchema } from '../addresses/index.js';
 import { departmentsSchema } from '../departments/index.js';
-import { isValidPhone } from './validators.js';
+import { isValidPhone, isValidPictureURL } from './validators.js';
 
 export const employeesSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  hireDate: Date,
-  department: departmentsSchema,
-  phone: String,
   address: addressesSchema,
+  department: departmentsSchema,
+  firstName: String,
+  hireDate: Date,
+  lastName: String,
+  phone: String,
+  pictureURL: String,
+  active: { type: Boolean, default: false },
 });
 
 // Middlewares
@@ -28,8 +30,10 @@ const validationsMiddleware = async (userDoc, next) => {
       'lastName',
       'hireDate',
       'phone',
+      'pictureURL',
     ].map(field => isRequiredValidator(field)),
     isValidPhone,
+    isValidPictureURL,
   ];
   const error = await validate(constraints, userDoc);
 

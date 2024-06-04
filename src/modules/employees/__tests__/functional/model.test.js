@@ -33,6 +33,7 @@ test('employee creation must succeeds', async t => {
   'lastName',
   'hireDate',
   'phone',
+  'pictureURL',
 ].map(field => {
   test(`employee creation must fail due to lack of required field "${field}"`, async t => {
     t.assert((await getEmployeesSavedOnDatabase()).length === 0);
@@ -86,6 +87,42 @@ test(`employee creation must fail due to invalid phone number`, async t => {
       field: 'phone',
       locales: LOCALES,
       value: phone2,
+    });
+  }
+
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+});
+
+test(`employee creation must fail due to invalid "pictureURL"`, async t => {
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+
+  const pictureURL1 = shuffle(VALID_EMPLOYEE_1.pictureURL);
+  try {
+    await new EmployeesModel({
+      ...VALID_EMPLOYEE_1,
+      pictureURL: pictureURL1,
+    }).save();
+  } catch(err) {
+    t.deepEqual(err, {
+      code: 'EMPLOYEES_VALIDATOR_ERROR_INVALID_PICTURE_URL',
+      field: 'pictureURL',
+      value: pictureURL1,
+    });
+  }
+
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+
+  const pictureURL2 = shuffle(VALID_EMPLOYEE_2.pictureURL);
+  try {
+    await new EmployeesModel({
+      ...VALID_EMPLOYEE_2,
+      pictureURL: pictureURL2,
+    }).save();
+  } catch(err) {
+    t.deepEqual(err, {
+      code: 'EMPLOYEES_VALIDATOR_ERROR_INVALID_PICTURE_URL',
+      field: 'pictureURL',
+      value: pictureURL2,
     });
   }
 

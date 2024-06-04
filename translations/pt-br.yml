@@ -18,3 +18,4 @@ ADDRESSES_VALIDATOR_ERROR_INVALID_LOCALE: Código de localização inválido.
 
 # modules/employees
 EMPLOYEES_VALIDATOR_ERROR_INVALID_PHONE: Número de celular inválido.
+EMPLOYEES_VALIDATOR_ERROR_INVALID_PICTURE_URL: URL de imagem de perfil inválida.
