@@ -6,14 +6,20 @@ import {
   isRequiredValidator,
   validate,
 } from '@leonardosarmentocastro/validate';
+import autopopulate from 'mongoose-autopopulate';
 
 import { addressesSchema } from '../addresses/index.js';
-import { departmentsSchema } from '../departments/index.js';
+import { DepartmentsModel } from '../departments/index.js';
 import { isValidPhone, isValidPictureURL } from './validators.js';
 
 export const departmentsHistorySchema = new mongoose.Schema({
+  _id: false,
   date: Date,
-  department: departmentsSchema,
+  department: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: DepartmentsModel.modelName,
+    autopopulate: true,
+  },
 });
 
 // Setup
@@ -24,7 +30,11 @@ departmentsHistorySchema.set('toObject', {
 
 export const employeesSchema = new mongoose.Schema({
   address: addressesSchema,
-  department: departmentsSchema,
+  department: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: DepartmentsModel.modelName,
+    autopopulate: true,
+  },
   departmentHistory: [ departmentsHistorySchema ],
   firstName: String,
   hireDate: Date,
@@ -62,6 +72,7 @@ employeesSchema.set('toObject', {
 });
 employeesSchema.plugin(plugSchema(commonSchema));
 employeesSchema.plugin(paginationPlugin);
+employeesSchema.plugin(autopopulate);
 employeesSchema.post('validate', validationsMiddleware);
 
 export const EmployeesModel = mongoose.model('Employee', employeesSchema);

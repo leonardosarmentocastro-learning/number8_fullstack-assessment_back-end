@@ -3,6 +3,7 @@ import { database } from '@leonardosarmentocastro/database';
 
 import { EmployeesModel } from '../../model.js';
 import { DepartmentsModel } from '../../../departments/index.js';
+import { VALID_DEPARTMENT_1, VALID_DEPARTMENT_2, VALID_DEPARTMENT_3 } from '../../../departments/__tests__/__fixtures__/departments.fixtures.js';
 import { AddressesModel, LOCALES } from '../../../addresses/index.js';
 import { VALID_EMPLOYEE_1, VALID_EMPLOYEE_2 } from '../__fixtures__/employees.fixtures.js';
 
@@ -21,11 +22,48 @@ const getEmployeesSavedOnDatabase = () => EmployeesModel.find({});
 test.before(t => database.connect());
 test.beforeEach(t => cleanUp(t))
 
-test('employee creation must succeeds', async t => {
+const prepare = async (t) => {
+  const createdDepartment1 = await new DepartmentsModel(VALID_DEPARTMENT_1).save();
+  const createdDepartment2 = await new DepartmentsModel(VALID_DEPARTMENT_2).save();
+  const createdDepartment3 = await new DepartmentsModel(VALID_DEPARTMENT_3).save();
+
+  return {
+    createdDepartment1,
+    createdDepartment2,
+    createdDepartment3,
+  };
+};
+
+test.only('employee creation must succeeds', async t => {
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
-  await new EmployeesModel(VALID_EMPLOYEE_1).save();
-  await new EmployeesModel(VALID_EMPLOYEE_2).save();
+  const { createdDepartment1, createdDepartment2 } = await prepare(t);
+
+  const createdEmployee1 = await new EmployeesModel({
+    ...VALID_EMPLOYEE_1,
+    department: createdDepartment1.id,
+    departmentHistory: [{
+      date: VALID_EMPLOYEE_1.hireDate,
+      department: createdDepartment1.id,
+    }]
+  }).save();
+
+  // assert auto population
+  t.truthy(createdEmployee1?.department?.id === createdDepartment1.id);
+  t.truthy(createdEmployee1?.department?.name === createdDepartment1.name);
+
+  const createdEmployee2 = await new EmployeesModel({
+    ...VALID_EMPLOYEE_2,
+    department: createdDepartment2.id,
+    departmentHistory: [{
+      date: VALID_EMPLOYEE_2.hireDate,
+      department: createdDepartment2.id,
+    }]
+  }).save();
+
+  // assert auto population
+  t.truthy(createdEmployee2?.department?.id === createdDepartment2.id);
+  t.truthy(createdEmployee2?.department?.name === createdDepartment2.name);
 
   t.assert((await getEmployeesSavedOnDatabase()).length === 2);
 });

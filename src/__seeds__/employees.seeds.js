@@ -16,19 +16,19 @@ export const seedEmployees = async ({
   const createdEmployee1 = await new EmployeesModel({
     ...VALID_EMPLOYEE_1,
     address: createdAddress1,
-    department: createdDepartment1,
+    department: createdDepartment1.id,
     departmentHistory: [{
       date: VALID_EMPLOYEE_1.hireDate,
-      department: createdDepartment1,
+      department: createdDepartment1.id,
     }],
   }).save();
   const createdEmployee2 = await new EmployeesModel({
     ...VALID_EMPLOYEE_2,
     address: createdAddress2,
-    department: createdDepartment2,
+    department: createdDepartment2.id,
     departmentHistory: [{
       date: VALID_EMPLOYEE_2.hireDate,
-      department: createdDepartment2,
+      department: createdDepartment2.id,
     }],
   }).save();
   console.info('[ seeds::employees ] done creating "employees" on database.');
