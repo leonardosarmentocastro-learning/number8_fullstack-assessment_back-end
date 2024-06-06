@@ -1,7 +1,7 @@
 import test from 'ava';
 import { database } from '@leonardosarmentocastro/database';
 
-import { VALID_DEPARTMENT_1, VALID_DEPARTMENT_2 } from '../__fixtures__/departments.fixtures.js';
+import { VALID_DEPARTMENT_1, VALID_DEPARTMENT_2, VALID_DEPARTMENT_3 } from '../__fixtures__/departments.fixtures.js';
 import { DepartmentsModel } from '../../model.js';
 
 const cleanUp = async t => {
@@ -17,8 +17,9 @@ test('department creation must succeeds', async t => {
 
   await new DepartmentsModel(VALID_DEPARTMENT_1).save();
   await new DepartmentsModel(VALID_DEPARTMENT_2).save();
+  await new DepartmentsModel(VALID_DEPARTMENT_3).save();
 
-  t.assert((await getDepartmentsSavedOnDatabase()).length === 2);
+  t.assert((await getDepartmentsSavedOnDatabase()).length === 3);
 });
 
 [

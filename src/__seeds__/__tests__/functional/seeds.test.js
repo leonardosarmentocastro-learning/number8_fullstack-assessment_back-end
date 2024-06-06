@@ -28,6 +28,6 @@ test('database seeding must succeed on creating records for all available models
   await t.notThrowsAsync(seedDatabase());
 
   t.assert((await getAddressesSavedOnDatabase()).length === 2);
-  t.assert((await getDepartmentsSavedOnDatabase()).length === 2);
+  t.assert((await getDepartmentsSavedOnDatabase()).length === 3);
   t.assert((await getEmployeesSavedOnDatabase()).length === 2);
 });

@@ -6,6 +6,8 @@ import { DepartmentsModel } from '../../../departments/index.js';
 import { AddressesModel, LOCALES } from '../../../addresses/index.js';
 import { VALID_EMPLOYEE_1, VALID_EMPLOYEE_2 } from '../__fixtures__/employees.fixtures.js';
 
+const shuffle = str => [...str].sort(()=> Math.random()-.5).join(''); // https://stackoverflow.com/a/60963711
+
 const cleanUp = async t => {
   await DepartmentsModel.deleteMany({});
   await EmployeesModel.deleteMany({});
@@ -34,6 +36,7 @@ test('employee creation must succeeds', async t => {
   'hireDate',
   'phone',
   'pictureURL',
+  'departmentHistory',
 ].map(field => {
   test(`employee creation must fail due to lack of required field "${field}"`, async t => {
     t.assert((await getEmployeesSavedOnDatabase()).length === 0);
@@ -41,7 +44,7 @@ test('employee creation must succeeds', async t => {
     try {
       await new EmployeesModel({
         ...VALID_EMPLOYEE_1,
-        [field]: '',
+        [field]: undefined,
       }).save();
     } catch(err) {
       t.deepEqual(err, {
@@ -54,7 +57,6 @@ test('employee creation must succeeds', async t => {
   });
 });
 
-const shuffle = str => [...str].sort(()=> Math.random()-.5).join(''); // https://stackoverflow.com/a/60963711
 test(`employee creation must fail due to invalid phone number`, async t => {
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
@@ -128,3 +130,42 @@ test(`employee creation must fail due to invalid "pictureURL"`, async t => {
 
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 });
+
+[ 'date', 'department' ].map(field => test(`section creation must fail due to lack of presence of field "${field}" in "departmentHistory" list`, async t => {
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+
+  const validDepartmentHistory = {
+    date: VALID_EMPLOYEE_1.hireDate,
+    department: VALID_EMPLOYEE_1.department,
+  };
+
+  try {
+    await new EmployeesModel({
+        ...VALID_EMPLOYEE_1,
+        departmentHistory: [{ ...validDepartmentHistory, [field]: undefined }],
+      })
+      .save()
+  } catch(err) {
+    t.deepEqual(err, {
+      code: 'VALIDATOR_ERROR_FIELD_IS_REQUIRED',
+      field: `departmentHistory[0].${field}`,
+    });
+  }
+
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+
+  try {
+    await new EmployeesModel({
+        ...VALID_EMPLOYEE_1,
+        departmentHistory: [ validDepartmentHistory , { ...validDepartmentHistory, [field]: undefined }],
+      })
+      .save()
+  } catch(err) {
+    t.deepEqual(err, {
+      code: 'VALIDATOR_ERROR_FIELD_IS_REQUIRED',
+      field: `departmentHistory[1].${field}`,
+    });
+  }
+
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+}));

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { commonSchema, plugSchema, transform } from '@leonardosarmentocastro/database';
 import { paginationPlugin } from '@leonardosarmentocastro/pagination';
 import {
+  indexArrayAttributes,
   isRequiredValidator,
   validate,
 } from '@leonardosarmentocastro/validate';
@@ -10,9 +11,21 @@ import { addressesSchema } from '../addresses/index.js';
 import { departmentsSchema } from '../departments/index.js';
 import { isValidPhone, isValidPictureURL } from './validators.js';
 
+export const departmentsHistorySchema = new mongoose.Schema({
+  date: Date,
+  department: departmentsSchema,
+});
+
+// Setup
+departmentsHistorySchema.set('toObject', {
+  transform,
+  virtuals: true // Expose "id" instead of "_id".
+});
+
 export const employeesSchema = new mongoose.Schema({
   address: addressesSchema,
   department: departmentsSchema,
+  departmentHistory: [ departmentsHistorySchema ],
   firstName: String,
   hireDate: Date,
   lastName: String,
@@ -31,6 +44,8 @@ const validationsMiddleware = async (userDoc, next) => {
       'hireDate',
       'phone',
       'pictureURL',
+      'departmentHistory',
+      ...indexArrayAttributes(userDoc, 'departmentHistory', [ 'date', 'department' ]),
     ].map(field => isRequiredValidator(field)),
     isValidPhone,
     isValidPictureURL,

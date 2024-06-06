@@ -4,12 +4,13 @@ import { seedEmployees } from './employees.seeds.js';
 
 export const seedDatabase = async () => {
   const { createdAddress1, createdAddress2 } = await seedAddresses();
-  const { createdDepartment1, createdDepartment2 } = await seedDepartments();
+  const { createdDepartment1, createdDepartment2, createdDepartment3 } = await seedDepartments();
   const { createdEmployee1, createdEmployee2 } = await seedEmployees({
     createdAddress1,
     createdAddress2,
     createdDepartment1,
     createdDepartment2,
+    createdDepartment3,
   });
 
   return {
@@ -20,6 +21,7 @@ export const seedDatabase = async () => {
     // departments
     createdDepartment1,
     createdDepartment2,
+    createdDepartment3,
 
     // employees
     createdEmployee1,

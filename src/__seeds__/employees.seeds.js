@@ -6,6 +6,7 @@ export const seedEmployees = async ({
   createdAddress2,
   createdDepartment1,
   createdDepartment2,
+  createdDepartment3,
 }) => {
   console.info('[ seeds::employees ] deleting "employees" on database...');
   await EmployeesModel.deleteMany({});
@@ -16,11 +17,19 @@ export const seedEmployees = async ({
     ...VALID_EMPLOYEE_1,
     address: createdAddress1,
     department: createdDepartment1,
+    departmentHistory: [{
+      date: VALID_EMPLOYEE_1.hireDate,
+      department: createdDepartment1,
+    }],
   }).save();
   const createdEmployee2 = await new EmployeesModel({
     ...VALID_EMPLOYEE_2,
     address: createdAddress2,
     department: createdDepartment2,
+    departmentHistory: [{
+      date: VALID_EMPLOYEE_2.hireDate,
+      department: createdDepartment2,
+    }],
   }).save();
   console.info('[ seeds::employees ] done creating "employees" on database.');
 
