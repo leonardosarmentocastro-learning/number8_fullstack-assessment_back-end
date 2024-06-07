@@ -36,7 +36,7 @@
 
 ### Getting started
 
-Ensure to have [Node.js LTS](https://github.com/nvm-sh/nvm) and [Docker](https://www.docker.com/) running. Then install project dependencies:
+Ensure to have [Node.js LTS](https://github.com/nvm-sh/nvm) and [Docker](https://www.docker.com/) installed and running. Then install project dependencies:
 
 ```shell
 npm install
