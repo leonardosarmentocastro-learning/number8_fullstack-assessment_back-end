@@ -27,39 +27,50 @@ const prepare = async (t) => {
   const createdDepartment2 = await new DepartmentsModel(VALID_DEPARTMENT_2).save();
   const createdDepartment3 = await new DepartmentsModel(VALID_DEPARTMENT_3).save();
 
-  return {
-    createdDepartment1,
-    createdDepartment2,
-    createdDepartment3,
-  };
-};
-
-test.only('employee creation must succeeds', async t => {
-  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
-
-  const { createdDepartment1, createdDepartment2 } = await prepare(t);
-
-  const createdEmployee1 = await new EmployeesModel({
+  const preparedEmployee1 = {
     ...VALID_EMPLOYEE_1,
     department: createdDepartment1.id,
     departmentHistory: [{
       date: VALID_EMPLOYEE_1.hireDate,
       department: createdDepartment1.id,
     }]
-  }).save();
+  };
 
-  // assert auto population
-  t.truthy(createdEmployee1?.department?.id === createdDepartment1.id);
-  t.truthy(createdEmployee1?.department?.name === createdDepartment1.name);
-
-  const createdEmployee2 = await new EmployeesModel({
+  const preparedEmployee2 = {
     ...VALID_EMPLOYEE_2,
     department: createdDepartment2.id,
     departmentHistory: [{
       date: VALID_EMPLOYEE_2.hireDate,
       department: createdDepartment2.id,
     }]
-  }).save();
+  }
+
+  return {
+    createdDepartment1,
+    createdDepartment2,
+    createdDepartment3,
+    preparedEmployee1,
+    preparedEmployee2,
+  };
+};
+
+test('employee creation must succeeds', async t => {
+  t.assert((await getEmployeesSavedOnDatabase()).length === 0);
+
+  const {
+    createdDepartment1,
+    createdDepartment2,
+    preparedEmployee1,
+    preparedEmployee2,
+  } = await prepare(t);
+
+  const createdEmployee1 = await new EmployeesModel(preparedEmployee1).save();
+
+  // assert auto population
+  t.truthy(createdEmployee1?.department?.id === createdDepartment1.id);
+  t.truthy(createdEmployee1?.department?.name === createdDepartment1.name);
+
+  const createdEmployee2 = await new EmployeesModel(preparedEmployee2).save();
 
   // assert auto population
   t.truthy(createdEmployee2?.department?.id === createdDepartment2.id);
@@ -79,9 +90,11 @@ test.only('employee creation must succeeds', async t => {
   test(`employee creation must fail due to lack of required field "${field}"`, async t => {
     t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
+    const { preparedEmployee1 } = await prepare(t);
+
     try {
       await new EmployeesModel({
-        ...VALID_EMPLOYEE_1,
+        ...preparedEmployee1,
         [field]: undefined,
       }).save();
     } catch(err) {
@@ -98,10 +111,12 @@ test.only('employee creation must succeeds', async t => {
 test(`employee creation must fail due to invalid phone number`, async t => {
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
-  const phone1 = shuffle(VALID_EMPLOYEE_1.phone);
+  const { preparedEmployee1, preparedEmployee2 } = await prepare(t);
+
+  const phone1 = shuffle(preparedEmployee1.phone);
   try {
     await new EmployeesModel({
-      ...VALID_EMPLOYEE_1,
+      ...preparedEmployee1,
       phone: phone1,
     }).save();
   } catch(err) {
@@ -115,10 +130,10 @@ test(`employee creation must fail due to invalid phone number`, async t => {
 
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
-  const phone2 = shuffle(VALID_EMPLOYEE_2.phone);
+  const phone2 = shuffle(preparedEmployee2.phone);
   try {
     await new EmployeesModel({
-      ...VALID_EMPLOYEE_2,
+      ...preparedEmployee2,
       phone: phone2,
     }).save();
   } catch(err) {
@@ -136,10 +151,12 @@ test(`employee creation must fail due to invalid phone number`, async t => {
 test(`employee creation must fail due to invalid "pictureURL"`, async t => {
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
-  const pictureURL1 = shuffle(VALID_EMPLOYEE_1.pictureURL);
+  const { preparedEmployee1, preparedEmployee2 } = await prepare(t);
+
+  const pictureURL1 = shuffle(preparedEmployee1.pictureURL);
   try {
     await new EmployeesModel({
-      ...VALID_EMPLOYEE_1,
+      ...preparedEmployee1,
       pictureURL: pictureURL1,
     }).save();
   } catch(err) {
@@ -152,10 +169,10 @@ test(`employee creation must fail due to invalid "pictureURL"`, async t => {
 
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
-  const pictureURL2 = shuffle(VALID_EMPLOYEE_2.pictureURL);
+  const pictureURL2 = shuffle(preparedEmployee2.pictureURL);
   try {
     await new EmployeesModel({
-      ...VALID_EMPLOYEE_2,
+      ...preparedEmployee2,
       pictureURL: pictureURL2,
     }).save();
   } catch(err) {
@@ -172,14 +189,16 @@ test(`employee creation must fail due to invalid "pictureURL"`, async t => {
 [ 'date', 'department' ].map(field => test(`section creation must fail due to lack of presence of field "${field}" in "departmentHistory" list`, async t => {
   t.assert((await getEmployeesSavedOnDatabase()).length === 0);
 
+  const { preparedEmployee1 } = await prepare(t);
+
   const validDepartmentHistory = {
-    date: VALID_EMPLOYEE_1.hireDate,
-    department: VALID_EMPLOYEE_1.department,
+    date: preparedEmployee1.hireDate,
+    department: preparedEmployee1.department,
   };
 
   try {
     await new EmployeesModel({
-        ...VALID_EMPLOYEE_1,
+        ...preparedEmployee1,
         departmentHistory: [{ ...validDepartmentHistory, [field]: undefined }],
       })
       .save()
@@ -194,7 +213,7 @@ test(`employee creation must fail due to invalid "pictureURL"`, async t => {
 
   try {
     await new EmployeesModel({
-        ...VALID_EMPLOYEE_1,
+        ...preparedEmployee1,
         departmentHistory: [ validDepartmentHistory , { ...validDepartmentHistory, [field]: undefined }],
       })
       .save()

@@ -17,7 +17,7 @@
     "start:server": "nodemon index.js",
     "start:production": "node index.js",
     "start": "npm run env:symlink:development && npm run start:database && npm run start:server",
-    "test": "npm run test:functional:local",
+    "test": "npm run test:unit && npm run test:functional:local",
     "test:ci": "nyc npm run test:functional",
     "disabled:test": "npm run test:unit && npm run test:functional:local",
     "disabled:test:ci": "nyc npm run test:unit && npm run test:functional",
